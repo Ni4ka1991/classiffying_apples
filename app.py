@@ -1,21 +1,64 @@
 #!/usr/bin/env python3
 from PIL import Image, ImageOps
 import matplotlib.pyplot as plt
+import torch, torch.nn as nn
+from torchvision import transforms
+import numpy
+import sys
 
-#hours_a_day = [ 4,   6,   8,  12,  16, 20, 22 ]      #time elapsed to the projects per day (max 24 ours, min != 0)   x = hours_a_day = [0;24]
-#success     = [ 100, 100, 95, 75,  50, 20, 0  ]      # % syccessfully completed projects                             y = success = [0; 100]
-#plt.plot( hours_a_day, success, color = 'red',  linestyle = 'solid', linewidth = 1, marker = '.' )
-#plt.show()
+numpy.set_printoptions( threshold = sys.maxsize )
 
 img = Image.open( "./data/good-apple/9.jpg" )
-print( "This is size of original image: ", img.size, "\n" )
+print( "This is size of original image: ", img.size )
 
 crop = img.resize(( 128, 128 ), Image.ANTIALIAS )
 gray = ImageOps.grayscale( crop )
 print( "This is size of GrayscaleCrop image: ", gray.size, "\n" )
 
+
+#VIEW DATA
+
+#plt.figure()
+#plt.imshow( img, interpolation = "nearest" )
+#plt.figure()
+#plt.imshow( gray, interpolation = "nearest", cmap = "gray" )
+#plt.show()
+
+
+#Create a single neuron
+
+#cnn = nn.Conv2d( 128, 128, 3 )
+cnn = nn.Conv2d( 1, 1, 3 )                                            # create one 3/3 neuron for gray scale images
+neuron_weights = cnn.weight.data.numpy()                                   #convert to numpy data for visualization
+print( f"Weights in a single 3/3 neuron >>>\n {neuron_weights} " )
+
+#Transform data to tensor
+img_tensor = transforms.ToTensor()( gray ).unsqueeze_( 0 )
+
+#Update tensor from created neuron
+filtered_img_tensor = cnn( img_tensor )
+
+
+#View tensors and his properties (shape)
+print( )
+print( f"Image to tensor print>>>\n {img_tensor}" )
+print( "The end of image tensor" )
+print( "*"*22 )
+print( f"Image tensor SHAPE: {img_tensor.shape}" )
+print( "*"*22 )
+print()
+print( f"Filtered img tensor SHAPE: {filtered_img_tensor.shape}" )
+print( "*"*22 )
+print( f" Filtered img tensor >>>\n {filtered_img_tensor}" )
+print( "The end" )
+
+#transform filtered tensor in img
+filtered_img = transforms.ToPILImage()( filtered_img_tensor.squeeze_( 0 ))
+
+#view filtered img  
 plt.figure()
-plt.imshow( img, interpolation = "nearest" )
-plt.figure()
-plt.imshow( gray, interpolation = "nearest" )
+plt.imshow( filtered_img, interpolation = "nearest", cmap = "gray" )
 plt.show()
+
+
+
