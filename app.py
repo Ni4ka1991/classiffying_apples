@@ -9,6 +9,13 @@ import matplotlib.pyplot as plt
 
 img = Image.open( "./data/good-apple/9.jpg" )
 print( "This is size of original image: ", img.size, "\n" )
+
+crop = img.resize(( 128, 128 ), Image.ANTIALIAS )
+gray = ImageOps.grayscale( crop )
+print( "This is size of GrayscaleCrop image: ", gray.size, "\n" )
+
 plt.figure()
 plt.imshow( img, interpolation = "nearest" )
+plt.figure()
+plt.imshow( gray, interpolation = "nearest" )
 plt.show()
